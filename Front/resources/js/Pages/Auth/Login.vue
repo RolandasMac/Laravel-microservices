@@ -5,8 +5,10 @@ import InputError from "@/Components/InputError.vue";
 import InputLabel from "@/Components/InputLabel.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
 import TextInput from "@/Components/TextInput.vue";
-import { Head, Link, useForm, router } from "@inertiajs/vue3";
+import { Head, Link, useForm, router, usePage } from "@inertiajs/vue3";
 import axios from "axios";
+
+const page = usePage();
 defineProps({
     canResetPassword: {
         type: Boolean,
@@ -26,6 +28,13 @@ const submit = async () => {
     form.post(route("login"), {
         onFinish: () => form.reset("password"),
     });
+
+    // const user = page.props.auth.user;
+    // if (user) {
+    //     console.log("User:", user);
+    // }
+    // console.log(page.props.auth);
+
     // const data = new FormData();
     // console.log(form);
     // try {
@@ -41,6 +50,10 @@ const submit = async () => {
     // } catch (error) {
     //     console.error(error);
     // }
+};
+const test = () => {
+    // alert("test");
+    console.log("page: ", page.props.auth);
 };
 </script>
 
@@ -109,5 +122,7 @@ const submit = async () => {
                 </PrimaryButton>
             </div>
         </form>
+        <div>{{ page.props.auth.user }}</div>
+        <PrimaryButton @click="test">User</PrimaryButton>
     </GuestLayout>
 </template>

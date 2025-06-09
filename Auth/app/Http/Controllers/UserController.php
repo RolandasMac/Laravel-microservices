@@ -30,7 +30,7 @@ class UserController extends Controller
             return response()->json(['message' => 'Wrong credentials'], status: 401);
         }
         $token = $user->createToken('apitoken')->plainTextToken;
-        return response()->json(['message' => 'Logged in successfully', 'user' => $user, 'token' => $token], status: 200);
+        return response()->json(['message' => 'Logged in successfully!', 'user' => $user, 'token' => $token], status: 200);
     }
     public function logout(Request $request)
     {

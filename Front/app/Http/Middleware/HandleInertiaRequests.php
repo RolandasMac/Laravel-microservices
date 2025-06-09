@@ -4,6 +4,7 @@ namespace App\Http\Middleware;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
 use Inertia\Middleware;
+use Tighten\Ziggy\Ziggy;
 
 class HandleInertiaRequests extends Middleware
 {
@@ -42,7 +43,12 @@ class HandleInertiaRequests extends Middleware
         return [
              ...parent::share($request),
             'auth'         => [
-                'user' => $request->user(),
+                // 'user' => $request->user(),
+                // $request->user() arba Auth::user() grąžins prisijungusio vartotojo objektą,
+                // jei AuthApiUserProvider sėkmingai jį autentifikavo.
+                'user' => $request->user() ? $request->user()->toArray() : null,
+                // Galite pridėti ir daugiau vartotojo susijusių duomenų, pvz., roles, permissions
+                // 'roles' => $request->user() ? $request->user()->roles->pluck('name') : [],
             ],
             'locale'       => App()->getLocale(),
             'translations' => [
@@ -53,6 +59,11 @@ class HandleInertiaRequests extends Middleware
                 // 'es' => $getTranslations('es', 'messages'),
                 // 'en_validation' => $getTranslations('en', 'validation'), // Pavyzdys, jei naudojate kitus failus
             ],
+            'ziggy'        => function () use ($request) {
+                return array_merge((new Ziggy())->toArray(), [
+                    'location' => $request->url(),
+                ]);
+            },
         ];
     }
 }

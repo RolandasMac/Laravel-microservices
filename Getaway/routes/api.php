@@ -24,7 +24,7 @@ Route::post('/auth/login', function (Request $request) use ($authServiceBaseUrl)
     try
     {
         $response = Http::withHeaders(['Accept' => 'application/json', 'Content-Type' => 'application/json'])->post("{$authServiceBaseUrl}/auth/login", $request->all())->throw();
-        return response()->json(['message' => $response->json()['message'], 'data' => $response->json()['user'], 'token' => $response->json()['token']], 200);
+        return response()->json($response->json(), $response->status());
     } catch (RequestException $e) {
         if ($e->response) {
             return response()->json($e->response->json(), $e->response->status());
@@ -108,13 +108,14 @@ Route::any('/{path?}', function (Request $request, $path = null) use ($authServi
 
     // Sukuriame HTTP kliento instanciją su antraštėmis
     $http = Http::withHeaders([
-        'Authorization' => 'Bearer ' . "token", // Naudojame tikrą tokeną iš užklausos
-                                                // Galite pridėti ir kitas antraštes, pvz., 'X-Forwarded-For'
+        'Authorization' => 'Bearer ' . $token, // Naudojame tikrą tokeną iš užklausos
+                                               // Galite pridėti ir kitas antraštes, pvz., 'X-Forwarded-For'
     ]);
 
     try {
         // Siunčiame užklausą į tikslinį servisą
         // Svarbu: pridedame '/api/' prefiksą, nes servisai greičiausiai turi savo API maršrutus
+
         $response = $http->$method("{$targetServiceUrl}/{$serviceIdentifier}/{$internalApiPath}", $request->all())->throw();
 
         // Grąžiname atsakymą iš serviso klientui
